@@ -1,0 +1,72 @@
+import sys
+import os
+from PySide6.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout
+import hou
+
+
+class SceneVersionSave(QWidget):
+
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Scene Version Save Tool")
+        self.resize(250, 120)
+
+        layout = QVBoxLayout()
+
+        self.save_btn = QPushButton("Save Version")
+        self.save_btn.clicked.connect(self.save_version)
+
+        layout.addWidget(self.save_btn)
+
+        self.setLayout(layout)
+
+    def get_next_version(self, directory, base_name):
+
+        versions = []
+
+        for f in os.listdir(directory):
+            if f.startswith(base_name) and "_v" in f:
+
+                v = f.split("_v")[-1].split(".")[0]
+
+                try:
+                    versions.append(int(v))
+                except:
+                    pass
+
+        if not versions:
+            return 1
+
+        return max(versions) + 1
+
+
+    def save_version(self):
+
+        current_file = hou.hipFile.path()
+
+        directory = os.path.dirname(current_file)
+        name = os.path.basename(current_file)
+
+        base = name.split(".")[0]
+
+        base_name = base.split("_v")[0]
+
+        version = self.get_next_version(directory, base_name)
+
+        new_name = f"{base_name}_v{version:03d}.hip"
+
+        new_path = os.path.join(directory, new_name)
+
+        hou.hipFile.save(file_name=new_path)
+
+        print("Saved:", new_path)
+
+
+app = QApplication.instance()
+
+if not app:
+    app = QApplication(sys.argv)
+
+window = SceneVersionSave()
+window.show()
