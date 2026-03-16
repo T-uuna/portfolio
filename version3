@@ -9,8 +9,8 @@ class SceneVersionSave(QWidget):
     def __init__(self):
         super().__init__()
         
-        self.base_path = "C:/포폴"
-        self.departments = ["부서1", "부서2", "부서3"]
+        self.base_path = "C:/PRJ"
+        self.departments = ["SEQ1", "SEQ2", "SEQ3"]
         self.setup_directories()
 
         self.setWindowTitle("Houdini Save Tool")
